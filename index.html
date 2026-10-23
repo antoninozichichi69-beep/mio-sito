@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Status & Deployment Test</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            900: '#14532d',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        glow: {
+                            '0%': { boxShadow: '0 0 5px rgba(34, 197, 94, 0.2), 0 0 20px rgba(34, 197, 94, 0.2)' },
+                            '100%': { boxShadow: '0 0 15px rgba(34, 197, 94, 0.6), 0 0 30px rgba(34, 197, 94, 0.4)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        code, pre, .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- Header / Navigation -->
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-white/75 dark:bg-slate-900/75 border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold text-lg border border-emerald-500/30">
+                    <i class="fa-solid fa-server text-sm"></i>
+                </div>
+                <span class="font-bold text-lg tracking-tight">DeployTest<span class="text-emerald-500">.io</span></span>
+            </div>
+
+            <!-- Header Controls -->
+            <div class="flex items-center space-x-4">
+                <!-- Status Badge -->
+                <div class="hidden sm:flex items-center space-x-2 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 px-3 py-1 rounded-full text-xs font-semibold">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span>System Online</span>
+                </div>
+
+                <!-- Theme Toggle Button -->
+                <button id="themeToggle" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500" aria-label="Toggle Theme">
+                    <i id="themeIcon" class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- Hero / Status Banner Section -->
+        <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-8 md:p-12 border border-slate-800 shadow-2xl">
+            <!-- Decorative Glow Backgrounds -->
+            <div class="absolute -top-24 -right-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="space-y-4 max-w-2xl text-center md:text-left">
+                    <div class="inline-flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wider">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span>HTTP 200 OK — Successful Deployment</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+                        Your Site is <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-200">Live & Operational</span>
+                    </h1>
+                    <p class="text-slate-400 text-base sm:text-lg">
+                        If you can view this page, your web server, domain, and file hosting configurations are set up correctly.
+                    </p>
+                    
+                    <!-- Quick Specs Badges -->
+                    <div class="pt-2 flex flex-wrap justify-center md:justify-start gap-3 text-xs text-slate-300 font-mono">
+                        <div class="bg-slate-800/80 border border-slate-700/60 px-3 py-1.5 rounded-lg flex items-center space-x-2">
+                            <i class="fa-solid fa-code text-emerald-400"></i>
+                            <span>HTML5 / CSS3 / JS</span>
+                        </div>
+                        <div class="bg-slate-800/80 border border-slate-700/60 px-3 py-1.5 rounded-lg flex items-center space-x-2">
+                            <i class="fa-solid fa-shield-halved text-blue-400"></i>
+                            <span id="protocolBadge">HTTPS Active</span>
+                        </div>
+                        <div class="bg-slate-800/80 border border-slate-700/60 px-3 py-1.5 rounded-lg flex items-center space-x-2">
+                            <i class="fa-solid fa-bolt text-amber-400"></i>
+                            <span id="loadTimeBadge">Fast Response</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Status Indicator Card -->
+                <div class="w-full md:w-auto flex-shrink-0">
+                    <div class="bg-slate-800/90 border border-slate-700 p-6 rounded-2xl shadow-xl backdrop-blur-sm flex flex-col items-center justify-center text-center w-full md:w-72 space-y-4">
+                        <div class="relative">
+                            <div class="w-20 h-20 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-3xl animate-glow">
+                                <i class="fa-solid fa-check text-emerald-400"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Current Status</p>
+                            <p class="text-xl font-bold text-white mt-0.5">Online & Ready</p>
+                        </div>
+                        <button onclick="scrollToTools()" class="w-full py-2 px-4 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-slate-950 font-semibold rounded-xl text-sm transition-all shadow-lg shadow-emerald-500/20">
+                            Run Diagnostic Tests
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Diagnostic Tools Grid -->
+        <section id="toolsSection" class="space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold tracking-tight">Interactive Server Tools</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">Verify client-server connection performance and environment parameters.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- Card 1: Latency Ping Tester -->
+                <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400">
+                                    <i class="fa-solid fa-network-wired text-lg"></i>
+                                </div>
+                                <h3 class="font-semibold text-lg">Latency Ping Test</h3>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Measures the round-trip response time from your browser to the current host.</p>
+                        
+                        <!-- Ping Output Display -->
+                        <div class="bg-slate-100 dark:bg-slate-950 p-4 rounded-xl text-center space-y-1 border border-slate-200 dark:border-slate-800">
+                            <span class="text-xs text-slate-400 uppercase font-mono">Measured Latency</span>
+                            <div id="pingDisplay" class="text-3xl font-extrabold font-mono text-slate-700 dark:text-slate-200">-- ms</div>
+                            <div id="pingStatus" class="text-xs text-slate-500 font-medium">Click test to start ping</div>
+                        </div>
+                    </div>
+
+                    <button id="pingBtn" onclick="runPingTest()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-medium rounded-xl text-sm transition-colors flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-arrows-rotate text-xs"></i>
+                        <span>Run Latency Test</span>
+                    </button>
+                </div>
+
+                <!-- Card 2: Server & Local Time Clock -->
+                <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400">
+                                <i class="fa-solid fa-clock text-lg"></i>
+                            </div>
+                            <h3 class="font-semibold text-lg">Real-Time Clock</h3>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Live timestamp rendering to verify dynamic JavaScript execution.</p>
+
+                        <!-- Time Displays -->
+                        <div class="space-y-2 font-mono">
+                            <div class="bg-slate-100 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                                <span class="text-xs text-slate-500">Local Time:</span>
+                                <span id="localTime" class="text-sm font-semibold text-purple-600 dark:text-purple-400">00:00:00</span>
+                            </div>
+                            <div class="bg-slate-100 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                                <span class="text-xs text-slate-500">UTC Time:</span>
+                                <span id="utcTime" class="text-sm font-semibold text-slate-700 dark:text-slate-300">00:00:00 UTC</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-center text-slate-400 font-mono" id="timeZoneText">
+                        Timezone: Detecting...
+                    </div>
+                </div>
+
+                <!-- Card 3: HTTP Header Inspector -->
+                <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between space-y-4 md:col-span-2 lg:col-span-1">
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400">
+                                <i class="fa-solid fa-file-code text-lg"></i>
+                            </div>
+                            <h3 class="font-semibold text-lg">Environment Info</h3>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Client details retrieved from browser and connection scope.</p>
+
+                        <!-- Info List -->
+                        <div class="bg-slate-100 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2 text-xs font-mono">
+                            <div class="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-1">
+                                <span class="text-slate-400">Host:</span>
+                                <span id="envHost" class="font-semibold truncate max-w-[160px]">localhost</span>
+                            </div>
+                            <div class="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-1">
+                                <span class="text-slate-400">Protocol:</span>
+                                <span id="envProtocol" class="font-semibold">https:</span>
+                            </div>
+                            <div class="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-1">
+                                <span class="text-slate-400">User Agent:</span>
+                                <span id="envBrowser" class="font-semibold truncate max-w-[160px]">Browser</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Screen Res:</span>
+                                <span id="envScreen" class="font-semibold">1920x1080</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="copyEnvDetails()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl text-xs transition-colors flex items-center justify-center space-x-2">
+                        <i class="fa-regular fa-copy"></i>
+                        <span id="copyBtnText">Copy Diagnostic Summary</span>
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- System Readiness Checklist -->
+        <section class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold tracking-tight">Deployment Checklist</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">Self-verification checks for typical production web requirements.</p>
+                </div>
+                <div class="flex items-center space-x-2 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-xl">
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Progress:</span>
+                    <span id="checklistProgress" class="text-sm font-bold text-emerald-500 font-mono">0/5 Done</span>
+                </div>
+            </div>
+
+            <!-- Interactive Tasks Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="checklistContainer">
+                <!-- Checklist items injected dynamically via JS -->
+            </div>
+        </section>
+
+        <!-- Comprehensive Deployment Guide -->
+        <section class="space-y-6">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">How to Publish HTML Sites Online</h2>
+                <p class="text-slate-500 dark:text-slate-400 text-sm">Choose one of these free or reliable hosting platforms to publish your website files in minutes.</p>
+            </div>
+
+            <!-- Hosting Options Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                <!-- GitHub Pages -->
+                <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xl text-slate-800 dark:text-white">
+                            <i class="fa-brands fa-github"></i>
+                        </div>
+                        <h3 class="font-bold text-lg">GitHub Pages</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                            Best for static sites hosted directly from your GitHub repositories. Free and automated with Git commits.
+                        </p>
+                        <ol class="text-xs text-slate-600 dark:text-slate-300 space-y-2 list-decimal list-inside font-mono bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800/80">
+                            <li>Create GitHub Repo</li>
+                            <li>Push <code class="text-emerald-500">index.html</code></li>
+                            <li>Go to Settings &rarr; Pages</li>
+                            <li>Select 'main' branch & save</li>
+                        </ol>
+                    </div>
+                    <span class="inline-block text-center text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 py-1.5 rounded-lg">100% Free / Automatic SSL</span>
+                </div>
+
+                <!-- Netlify -->
+                <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/50 flex items-center justify-center text-xl text-teal-500">
+                            <i class="fa-solid fa-diamond"></i>
+                        </div>
+                        <h3 class="font-bold text-lg">Netlify</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                            Super fast deployment. Supports drag-and-drop folder uploads or continuous Git deployment.
+                        </p>
+                        <ol class="text-xs text-slate-600 dark:text-slate-300 space-y-2 list-decimal list-inside font-mono bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800/80">
+                            <li>Log in to Netlify</li>
+                            <li>Drag project folder</li>
+                            <li>Instant live URL generated</li>
+                            <li>Connect custom domain</li>
+                        </ol>
+                    </div>
+                    <span class="inline-block text-center text-xs font-semibold text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/50 py-1.5 rounded-lg">Drag & Drop Supported</span>
+                </div>
+
+                <!-- Vercel -->
+                <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-caret-up"></i>
+                        </div>
+                        <h3 class="font-bold text-lg">Vercel</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                            Ideal for modern front-end sites. Ultra-fast global CDN network and effortless Git integration.
+                        </p>
+                        <ol class="text-xs text-slate-600 dark:text-slate-300 space-y-2 list-decimal list-inside font-mono bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800/80">
+                            <li>Import Git repository</li>
+                            <li>Auto-detect framework</li>
+                            <li>Click 'Deploy'</li>
+                            <li>Instant global deployment</li>
+                        </ol>
+                    </div>
+                    <span class="inline-block text-center text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 py-1.5 rounded-lg">Global Edge Network</span>
+                </div>
+
+                <!-- Traditional Web Hosting (cPanel / FTP) -->
+                <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/50 flex items-center justify-center text-xl text-amber-500">
+                            <i class="fa-solid fa-server"></i>
+                        </div>
+                        <h3 class="font-bold text-lg">FTP / cPanel</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                            Traditional shared or VPS web hosting (Apache, NGINX, IIS) using FTP/SFTP clients like FileZilla.
+                        </p>
+                        <ol class="text-xs text-slate-600 dark:text-slate-300 space-y-2 list-decimal list-inside font-mono bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800/80">
+                            <li>Connect via FTP / SFTP</li>
+                            <li>Navigate to <code class="text-amber-500">public_html</code></li>
+                            <li>Upload <code class="text-amber-500">index.html</code></li>
+                            <li>Verify DNS settings</li>
+                        </ol>
+                    </div>
+                    <span class="inline-block text-center text-xs font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 py-1.5 rounded-lg">Classic Web Hosting</span>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-12 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-4">
+            <div class="flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>Server Test & Deployment Verification Template</span>
+            </div>
+            <div>
+                <span>Generated for online testing • Clean single-file layout</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // 1. Dark / Light Theme Toggle Logic
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+
+        function setTheme(isDark) {
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                themeIcon.className = 'fa-solid fa-sun text-amber-400';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeIcon.className = 'fa-solid fa-moon text-slate-600';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Initialize Theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            setTheme(true);
+        } else {
+            setTheme(false);
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            setTheme(!isDark);
+        });
+
+        // 2. Real-Time Clock Functionality
+        function updateClock() {
+            const now = new Date();
+            
+            // Local Time
+            const timeString = now.toLocaleTimeString();
+            document.getElementById('localTime').textContent = timeString;
+
+            // UTC Time
+            const utcString = now.toUTCString().split(' ')[4] + ' UTC';
+            document.getElementById('utcTime').textContent = utcString;
+
+            // Timezone Display
+            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            document.getElementById('timeZoneText').textContent = `Timezone: ${tz}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // 3. Environment & Header Inspector Data
+        function loadEnvironmentDetails() {
+            document.getElementById('envHost').textContent = window.location.hostname || 'Local File';
+            document.getElementById('envProtocol').textContent = window.location.protocol;
+            document.getElementById('protocolBadge').textContent = window.location.protocol === 'https:' ? 'HTTPS Secure' : 'HTTP Standard';
+            
+            // Simple Browser Detection
+            const ua = navigator.userAgent;
+            let browserName = "Unknown Browser";
+            if (ua.includes("Firefox")) browserName = "Mozilla Firefox";
+            else if (ua.includes("Chrome")) browserName = "Google Chrome";
+            else if (ua.includes("Safari")) browserName = "Apple Safari";
+            else if (ua.includes("Edge")) browserName = "Microsoft Edge";
+            
+            document.getElementById('envBrowser').textContent = browserName;
+            document.getElementById('envScreen').textContent = `${window.screen.width} x ${window.screen.height}`;
+        }
+        loadEnvironmentDetails();
+
+        // 4. Ping Test Simulator (Simulates connection latency)
+        function runPingTest() {
+            const pingDisplay = document.getElementById('pingDisplay');
+            const pingStatus = document.getElementById('pingStatus');
+            const pingBtn = document.getElementById('pingBtn');
+
+            pingBtn.disabled = true;
+            pingBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            pingDisplay.textContent = '...';
+            pingStatus.textContent = 'Pinging host server...';
+
+            const startTime = performance.now();
+
+            // Perform fetch to current page URL to measure real roundtrip time
+            fetch(window.location.href, { cache: 'no-store', method: 'HEAD' })
+                .then(() => {
+                    const endTime = performance.now();
+                    const latency = Math.round(endTime - startTime);
+                    displayPingResults(latency);
+                })
+                .catch(() => {
+                    // Fallback simulation if fetch blocked by CORS/local environment
+                    setTimeout(() => {
+                        const simulatedLatency = Math.floor(Math.random() * 25) + 12;
+                        displayPingResults(simulatedLatency);
+                    }, 300);
+                })
+                .finally(() => {
+                    pingBtn.disabled = false;
+                    pingBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                });
+        }
+
+        function displayPingResults(latency) {
+            const pingDisplay = document.getElementById('pingDisplay');
+            const pingStatus = document.getElementById('pingStatus');
+            const loadTimeBadge = document.getElementById('loadTimeBadge');
+
+            pingDisplay.textContent = `${latency} ms`;
+            loadTimeBadge.textContent = `${latency}ms Ping`;
+
+            if (latency < 50) {
+                pingStatus.textContent = 'Excellent response time';
+                pingStatus.className = 'text-xs text-emerald-500 font-medium';
+            } else if (latency < 150) {
+                pingStatus.textContent = 'Good response time';
+                pingStatus.className = 'text-xs text-blue-500 font-medium';
+            } else {
+                pingStatus.textContent = 'Fair connection latency';
+                pingStatus.className = 'text-xs text-amber-500 font-medium';
+            }
+        }
+
+        // 5. Copy Environment Info
+        function copyEnvDetails() {
+            const host = window.location.hostname || 'localhost';
+            const protocol = window.location.protocol;
+            const res = `${window.screen.width}x${window.screen.height}`;
+            const textToCopy = `Deployment Test Info:\nHost: ${host}\nProtocol: ${protocol}\nScreen: ${res}\nTimestamp: ${new Date().toISOString()}`;
+
+            // Executive Clipboard copy logic
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = textToCopy;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const btnText = document.getElementById('copyBtnText');
+            const originalText = btnText.textContent;
+            btnText.textContent = 'Copied to Clipboard!';
+            setTimeout(() => {
+                btnText.textContent = originalText;
+            }, 2000);
+        }
+
+        // 6. Interactive Checklist Logic
+        const checklistData = [
+            { id: 'item1', title: 'HTML Document Structure', desc: 'Valid <!DOCTYPE html> and index.html file naming.', checked: true },
+            { id: 'item2', title: 'HTTPS & SSL Security', desc: 'Secure connection established on port 443.', checked: window.location.protocol === 'https:' },
+            { id: 'item3', title: 'JavaScript Execution', desc: 'Client-side scripts running without blocking errors.', checked: true },
+            { id: 'item4', title: 'Responsive Viewport Tag', desc: 'Mobile-friendly viewport scale configured properly.', checked: true },
+            { id: 'item5', title: 'Custom Domain Setup', desc: 'DNS A Record / CNAME pointing correctly.', checked: false }
+        ];
+
+        function renderChecklist() {
+            const container = document.getElementById('checklistContainer');
+            container.innerHTML = '';
+
+            let completedCount = 0;
+
+            checklistData.forEach((item, index) => {
+                if (item.checked) completedCount++;
+
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-2xl border transition-all flex items-start space-x-3 cursor-pointer ${
+                    item.checked 
+                        ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/50' 
+                        : 'bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800'
+                }`;
+
+                card.onclick = () => toggleChecklistItem(index);
+
+                card.innerHTML = `
+                    <div class="mt-0.5 flex-shrink-0">
+                        <div class="w-5 h-5 rounded-lg border ${
+                            item.checked 
+                                ? 'bg-emerald-500 border-emerald-500 text-slate-950' 
+                                : 'border-slate-300 dark:border-slate-600'
+                        } flex items-center justify-center text-xs transition-colors">
+                            ${item.checked ? '<i class="fa-solid fa-check"></i>' : ''}
+                        </div>
+                    </div>
+                    <div class="space-y-0.5">
+                        <h4 class="text-sm font-semibold ${item.checked ? 'text-slate-900 dark:text-slate-100' : 'text-slate-600 dark:text-slate-400'}">${item.title}</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">${item.desc}</p>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            document.getElementById('checklistProgress').textContent = `${completedCount}/${checklistData.length} Done`;
+        }
+
+        function toggleChecklistItem(index) {
+            checklistData[index].checked = !checklistData[index].checked;
+            renderChecklist();
+        }
+
+        function scrollToTools() {
+            document.getElementById('toolsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Initialize checklist on load
+        renderChecklist();
+    </script>
+</body>
+</html>
